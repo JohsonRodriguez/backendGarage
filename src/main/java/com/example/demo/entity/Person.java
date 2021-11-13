@@ -18,10 +18,11 @@ public class Person  implements Serializable {
     private String dni;
     private String name;
     private String lastname;
-    private String registrationplate;
-    private String carbrand;
-    private String carmodel;
-    private String carcolor;
+    private String phone;
+    private String type;
+    private String state;
+
+
 
 
 }

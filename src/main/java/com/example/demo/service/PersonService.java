@@ -5,16 +5,18 @@ import com.example.demo.entity.Person;
 import java.util.Optional;
 
 
-public interface PersonaService {
+public interface PersonService {
     Iterable<Person> listarPerson();
 
-    String savePerson(Person person);
+     void newPerson(Person person);
 
-    String updatePerson(Person person);
+     void updatePerson(Person person);
+     Long countPerson();
 
     Optional<Person> searchPerson(String dni);
 
-    Optional<Person> searchCar(String plate);
+
+
 
 
 }

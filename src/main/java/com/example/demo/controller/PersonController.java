@@ -1,10 +1,8 @@
 package com.example.demo.controller;
 
-import com.example.demo.QRGenerator.QRCodeGenerator;
+import com.example.demo.qrgenerator.QRCodeGenerator;
 import com.example.demo.entity.Person;
-import com.example.demo.exception.PersonsNotFoundException;
-import com.example.demo.service.PersonServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.demo.service.PersonService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,32 +13,38 @@ import java.util.Optional;
 @CrossOrigin("*")
 @RequestMapping("/person")
 public class PersonController {
-    @Autowired
-    PersonServiceImpl personServiceImpl;
+
+    private final PersonService personService;
+
+    public PersonController(PersonService personService) {
+        this.personService = personService;
+    }
 
     @GetMapping("/all")
     public Iterable<Person> getAllPerson(){
-         return personServiceImpl.listarPerson();
+        return personService.listarPerson();
     }
 
     @PostMapping("/add")
     public void addPerson(@RequestBody Person person){
-            personServiceImpl.savePerson(person);
+        personService.newPerson(person);
     }
+
     @PutMapping("/update")
     public void updatePerson(@RequestBody Person person){
-        personServiceImpl.updatePerson(person);
+        personService.updatePerson(person);
     }
 
     @GetMapping("find/{dni}")
     public Optional<Person> getById(@PathVariable("dni") String dni) {
-       return personServiceImpl.searchPerson(dni);
+        return personService.searchPerson(dni);
     }
 
-    @GetMapping("findcar/{plate}")
-    public Optional<Person> getByCar(@PathVariable("plate") String plate) {
-        return personServiceImpl.searchCar(plate);
+    @GetMapping("/count")
+    public Long countPerson(){
+        return personService.countPerson();
     }
+
     @GetMapping(value = "/generateQRCode/{width}/{height}/{codeText}")
     public ResponseEntity<byte[]> generateQRCode(@PathVariable("codeText") String codeText, @PathVariable("width") int width, @PathVariable("height") int height)throws Exception
     {
@@ -48,4 +52,3 @@ public class PersonController {
     }
 
 }
-

@@ -1,4 +1,4 @@
-package com.example.demo.QRGenerator;
+package com.example.demo.qrgenerator;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;

@@ -17,5 +17,5 @@ public class RegisterDto {
     private String user;
     @NotNull
 //    @Size(max = 8, min = 8)
-    private String dni;
+    private String registrationplate;
 }

@@ -18,10 +18,7 @@ public class RegisterController {
     @Autowired
     private RegisterService registerService;
 
-    @Autowired
-    private RegisterServiceImpl registerServiceImpl;
-
-    @PostMapping("/save")
+      @PostMapping("/save")
     public void saveRegister(@Valid @RequestBody RegisterDto registerDto) {
         registerService.saveRegister(registerDto);
     }
@@ -31,18 +28,23 @@ public class RegisterController {
 //        registerService.updateRegister(idRegister);
 //    }
 
-    @PostMapping(value = "/checkout/{dni}")
-    public void  updateRegister(@PathVariable("dni") String dni){
-         registerService.updateRegister(dni);
+    @PostMapping(value = "/checkout/{registrationplate}")
+    public void  updateRegister(@PathVariable("registrationplate") String registrationplate){
+         registerService.updateRegister(registrationplate);
     }
 
     @GetMapping("/searchday/{day}")
     public List<Register>registerDiary(@PathVariable("day") String day){
-       return registerServiceImpl.searchDay(day);
+       return registerService.searchDay(day);
     }
 
-    @GetMapping("/searchdni/{dni}")
-    public List<Register>searchRegistersPerson(@PathVariable("dni") String dni){
-        return registerServiceImpl.searchPersonbyDay(dni);
+    @GetMapping("/count")
+    public Long countRegister(){
+        return registerService.countRegistro();
+    }
+
+    @GetMapping("/searchplate/{registrationplate}")
+    public List<Register>searchRegistersPerson(@PathVariable("registrationplate") String registrationplate){
+        return registerService.searchCarbyDay(registrationplate);
     }
 }

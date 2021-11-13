@@ -1,8 +1,9 @@
 package com.example.demo.service;
 
 
-import com.example.demo.Repository.PersonRepository;
-import com.example.demo.Repository.RegisterRepository;
+import com.example.demo.repository.CarRepository;
+import com.example.demo.repository.PersonRepository;
+import com.example.demo.repository.RegisterRepository;
 import com.example.demo.dto.RegisterDto;
 import com.example.demo.entity.Register;
 import com.example.demo.exception.UserNotFoundException;
@@ -12,8 +13,6 @@ import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class RegisterServiceImpl implements RegisterService {
@@ -23,28 +22,31 @@ public class RegisterServiceImpl implements RegisterService {
     @Autowired
     PersonRepository personRepository;
 
+    @Autowired
+    CarRepository carRepository;
+
     @Override
     public void saveRegister(RegisterDto registerDto) {
         var day = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
         var checkinHour = new SimpleDateFormat("HH:mm:ss").format(new Date());
         var register = new Register();
-        var person = personRepository.findFirstByDni(registerDto.getDni());
-        if (person.isPresent()) {
-            var registros = registerRepository.findAllByPersonAndDay(person.get(), day);
+        var car = carRepository.findByRegistrationplate(registerDto.getRegistrationplate().toUpperCase());
+        if (car.isPresent()) {
+            var registros = registerRepository.findAllByCarAndDay(car.get(), day);
             if (registros.size() > 0) {
                 var ultimoRegistro = registros.get(registros.size() - 1);
                 if (ultimoRegistro.getCheckout() != null) {
-                    register.setPerson(person.get());
+                    register.setCar(car.get());
                     register.setCheckin(checkinHour);
                     register.setUserid(registerDto.getUser());
                     register.setObs("ingreso correcto");
                     register.setDay(day);
                     registerRepository.save(register);
                 } else {
-                    throw new UserNotFoundException("Checking already registered, register checkout first");
+                    throw new UserNotFoundException("Vehiculo ya ingreso, registre su salida primero");
                 }
             }else{
-                register.setPerson(person.get());
+                register.setCar(car.get());
                 register.setCheckin(checkinHour);
                 register.setUserid(registerDto.getUser());
                 register.setObs("ingreso correcto");
@@ -52,7 +54,7 @@ public class RegisterServiceImpl implements RegisterService {
                 registerRepository.save(register);
             }
         } else {
-            throw new UserNotFoundException("Checkin error, person doesn't exists");
+            throw new UserNotFoundException("Error en registro, vehiculo no existe");
         }
 
     }
@@ -77,11 +79,11 @@ public class RegisterServiceImpl implements RegisterService {
     //////////
 
     @Override
-    public void updateRegister(String dni) {
-        var person = personRepository.findFirstByDni(dni);
-        if (person.isPresent()) {
+    public void updateRegister(String registrationplate) {
+        var car = carRepository.findByRegistrationplate(registrationplate.toUpperCase());
+        if (car.isPresent()) {
             var day = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-            var registros = registerRepository.findAllByPersonAndDay(person.get(), day);
+            var registros = registerRepository.findAllByCarAndDay(car.get(), day);
             if (registros.size() > 0) {
                 var ultimoRegistro = registros.get(registros.size() - 1);
                 if (ultimoRegistro.getCheckout() == null) {
@@ -89,10 +91,10 @@ public class RegisterServiceImpl implements RegisterService {
                     ultimoRegistro.setCheckout(checkoutHour);
                     registerRepository.save(ultimoRegistro);
                 } else {
-                    throw new UserNotFoundException("Checkout already registered");
+                    throw new UserNotFoundException("Vehiculo ya registro salida");
                 }
             } else {
-                throw new UserNotFoundException("Person doesn't has register");
+                throw new UserNotFoundException("Vehiculo aun no ha ingresado");
             }
 
 
@@ -138,11 +140,16 @@ public class RegisterServiceImpl implements RegisterService {
     }
 
     @Override
-    public List<Register> searchPersonbyDay (String dni) {
-        var person = personRepository.findFirstByDni(dni);
-        if (person.isPresent()) {
+    public Long countRegistro() {
+        return registerRepository.count();
+    }
+
+    @Override
+    public List<Register> searchCarbyDay (String registrationplate) {
+        var car = carRepository.findByRegistrationplate(registrationplate);
+        if (car.isPresent()) {
             var day = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-            return registerRepository.findAllByPersonAndDay(person.get(), day);
+            return registerRepository.findAllByCarAndDay(car.get(), day);
         }else {
              throw new UserNotFoundException("Person doesn't exists");
         }

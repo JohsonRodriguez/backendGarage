@@ -24,9 +24,9 @@ public class Register implements Serializable{
     private String obs;
     private String userid;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "person_dni")
+    @JoinColumn(name = "car_registrationplate")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    private Person person;
+    private Car car;
 
 
 }

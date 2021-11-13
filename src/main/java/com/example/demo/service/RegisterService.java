@@ -10,8 +10,9 @@ import java.util.Optional;
 public interface RegisterService {
 
         void  saveRegister(RegisterDto registerDto);
-List<Register>searchPersonbyDay(String dni);
-      void  updateRegister(String dni);
+List<Register>searchCarbyDay(String registrationplate);
+      void  updateRegister(String registrationplate);
         List<Register> searchDay(String day);
+    Long countRegistro();
 
 }
